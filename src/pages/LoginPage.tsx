@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../lib/auth-context'
 import { ApiError } from '../lib/api'
-import { Alert, Button, Field } from '../components/ui'
-import './login.css'
+import { AuthPoster } from '../components/layout/AuthPoster'
+import { Button, Field, Notice } from '../components/ui'
 
 type Stage = { name: 'credentials' } | { name: 'two-factor'; challengeToken: string }
 
@@ -54,31 +54,31 @@ export function LoginPage() {
     }
   }
 
+  const credentials = stage.name === 'credentials'
+
   return (
-    <div className="login">
+    <AuthPoster
+      kicker={credentials ? 'Administrator access' : 'Two-factor authentication'}
+      title={credentials ? 'Sign in' : 'Verify it is you'}
+      body={
+        credentials
+          ? 'Use your work email. Every sign-in attempt is recorded, and repeated failures lock the account.'
+          : 'Enter the six-digit code from your authenticator app, or one of the recovery codes issued at enrolment.'
+      }
+    >
       <form
-        className="login__card"
+        className="stack"
         onSubmit={(event) => {
           event.preventDefault()
-          void (stage.name === 'credentials' ? submitCredentials() : submitCode())
+          void (credentials ? submitCredentials() : submitCode())
         }}
       >
-        <div className="login__brand">
-          <span className="login__mark" aria-hidden="true">
-            BAP
-          </span>
-          <div>
-            <h1>Administration</h1>
-            <p className="muted">Biller Aggregation and Vending Platform</p>
-          </div>
-        </div>
+        {error && <Notice>{error}</Notice>}
 
-        {error && <Alert>{error}</Alert>}
-
-        {stage.name === 'credentials' ? (
+        {credentials ? (
           <>
             <Field
-              label="Email"
+              label="Work email"
               type="email"
               autoComplete="username"
               required
@@ -93,7 +93,7 @@ export function LoginPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
-            <Button type="submit" loading={busy}>
+            <Button type="submit" loading={busy} className="btn-block">
               Sign in
             </Button>
           </>
@@ -101,7 +101,6 @@ export function LoginPage() {
           <>
             <Field
               label="Authentication code"
-              hint="Enter the six-digit code from your authenticator app, or one of your recovery codes."
               inputMode="text"
               autoComplete="one-time-code"
               autoFocus
@@ -109,15 +108,15 @@ export function LoginPage() {
               value={code}
               onChange={(event) => setCode(event.target.value)}
             />
-            <Button type="submit" loading={busy}>
+            <Button type="submit" loading={busy} className="btn-block">
               Verify
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setStage({ name: 'credentials' })}>
+            <Button variant="ghost" onClick={() => setStage({ name: 'credentials' })}>
               Start over
             </Button>
           </>
         )}
       </form>
-    </div>
+    </AuthPoster>
   )
 }

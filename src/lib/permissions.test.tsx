@@ -48,7 +48,7 @@ describe('permission-aware navigation', () => {
   it('hides sections the operator cannot access', async () => {
     renderShellFor(['transactions.view'])
 
-    expect(await screen.findByText('Dashboard')).toBeInTheDocument()
+    expect(await screen.findByText('Overview')).toBeInTheDocument()
     expect(screen.queryByText('Users and roles')).not.toBeInTheDocument()
     expect(screen.queryByText('API clients')).not.toBeInTheDocument()
   })

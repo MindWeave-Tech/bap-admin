@@ -5,8 +5,8 @@ import { api, ApiError } from '../lib/api'
 import type { ApiClientSummary } from '../lib/types'
 import { useAuth } from '../lib/auth-context'
 import { Permission } from '../lib/permissions'
-import { Alert, Button, Card, Dialog, EmptyState, Field, Loading, StatusBadge } from '../components/ui'
-import { PageHeader } from '../components/layout/PageHeader'
+import { Notice, Button, Panel, Dialog, EmptyState, Field, Loading, StatusTag } from '../components/ui'
+import { Screen } from '../components/layout/Screen'
 
 export function ApiClientsPage() {
   const { can } = useAuth()
@@ -19,21 +19,20 @@ export function ApiClientsPage() {
   })
 
   return (
-    <>
-      <PageHeader
+      <Screen number="09"
         title="API clients"
         description="Registered consumers of the vending API, their service access, limits, and credentials."
         actions={
           can(Permission.ApiClientsManage) ? <Button onClick={() => setCreating(true)}>Add client</Button> : undefined
         }
-      />
+      >
 
-      <Card bodyless>
+      <Panel flush>
         {clients.isPending ? (
           <Loading label="Loading clients" />
         ) : clients.isError ? (
-          <div style={{ padding: 16 }}>
-            <Alert>Could not load API clients.</Alert>
+          <div style={{ padding: "var(--space-4)" }}>
+            <Notice>Could not load API clients.</Notice>
           </div>
         ) : clients.data.length === 0 ? (
           <EmptyState title="No API clients yet">
@@ -62,13 +61,13 @@ export function ApiClientsPage() {
                     </td>
                     <td>{client.clientType}</td>
                     <td>
-                      <StatusBadge status={client.environment} />
+                      <StatusTag status={client.environment} />
                     </td>
                     <td>
-                      <StatusBadge status={client.status} />
+                      <StatusTag status={client.status} />
                     </td>
                     <td>{client.credentials.filter((credential) => credential.status === 'active').length} active</td>
-                    <td className="muted">
+                    <td className="panel__subtitle">
                       {client.rateLimitPerMinute ? `${client.rateLimitPerMinute}/min` : 'No rate limit'}
                       {client.dailyTransactionLimit ? ` · ${client.dailyTransactionLimit}/day` : ''}
                     </td>
@@ -81,7 +80,7 @@ export function ApiClientsPage() {
             </table>
           </div>
         )}
-      </Card>
+      </Panel>
 
       {creating && (
         <CreateClientDialog
@@ -92,7 +91,7 @@ export function ApiClientsPage() {
           }}
         />
       )}
-    </>
+    </Screen>
   )
 }
 
@@ -133,7 +132,7 @@ function CreateClientDialog({ onClose, onCreated }: { onClose: () => void; onCre
       }
     >
       {mutation.isError && Object.keys(fieldErrors).length === 0 && (
-        <Alert>{mutation.error instanceof ApiError ? mutation.error.message : 'Could not create the client.'}</Alert>
+        <Notice>{mutation.error instanceof ApiError ? mutation.error.message : 'Could not create the client.'}</Notice>
       )}
       <Field
         label="Code"

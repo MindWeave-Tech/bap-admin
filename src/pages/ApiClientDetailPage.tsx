@@ -6,8 +6,8 @@ import type { ApiClientSummary, IssuedCredential } from '../lib/types'
 import { useAuth } from '../lib/auth-context'
 import { Permission } from '../lib/permissions'
 import { useConfirmedAction } from '../lib/useConfirmedAction'
-import { Alert, Badge, Button, Card, Dialog, EmptyState, Field, Loading, StatusBadge } from '../components/ui'
-import { PageHeader } from '../components/layout/PageHeader'
+import { Notice, Tag, Button, Panel, Dialog, EmptyState, Field, Loading, StatusTag } from '../components/ui'
+import { Screen } from '../components/layout/Screen'
 
 export function ApiClientDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -37,31 +37,30 @@ export function ApiClientDetailPage() {
   }
 
   if (client.isPending) return <Loading label="Loading client" />
-  if (client.isError) return <Alert>Could not load this API client.</Alert>
+  if (client.isError) return <Notice>Could not load this API client.</Notice>
 
   const data = client.data
 
   return (
-    <>
-      <PageHeader
+      <Screen number="09"
         title={data.name}
         description={`Client code ${data.code} · ${data.clientType} · ${data.environment}`}
         actions={
           mayManageCredentials ? <Button onClick={() => setIssuing(true)}>Issue credential</Button> : undefined
         }
-      />
+      >
 
       <div className="stack">
-        <Link to="/api-clients" className="muted">
+        <Link to="/api-clients" className="panel__subtitle">
           ← Back to API clients
         </Link>
 
-        {error && <Alert>{error}</Alert>}
+        {error && <Notice>{error}</Notice>}
 
         <div className="grid-2">
-          <Card title="Configuration">
+          <Panel title="Configuration">
             <dl className="stack" style={{ margin: 0 }}>
-              <Detail label="Status" value={<StatusBadge status={data.status} />} />
+              <Detail label="Status" value={<StatusTag status={data.status} />} />
               <Detail label="Tenant" value={data.tenant ?? 'None'} />
               <Detail label="Callback URL" value={data.callbackUrl ?? 'Not configured'} />
               <Detail
@@ -70,9 +69,9 @@ export function ApiClientDetailPage() {
               />
               <Detail label="Expires" value={data.expiresAt ? new Date(data.expiresAt).toLocaleString() : 'Never'} />
             </dl>
-          </Card>
+          </Panel>
 
-          <Card title="Limits and access">
+          <Panel title="Limits and access">
             <dl className="stack" style={{ margin: 0 }}>
               <Detail
                 label="Rate limit"
@@ -103,13 +102,13 @@ export function ApiClientDetailPage() {
                 value={data.callbackEvents.length ? data.callbackEvents.join(', ') : 'All events'}
               />
             </dl>
-          </Card>
+          </Panel>
         </div>
 
-        <Card
+        <Panel
           title="Credentials"
           subtitle="Secrets are shown once at creation and cannot be retrieved afterwards."
-          bodyless
+          flush
         >
           {data.credentials.length === 0 ? (
             <EmptyState title="No credentials issued">
@@ -136,14 +135,14 @@ export function ApiClientDetailPage() {
                       <td>
                         <div className="row">
                           {(credential.scopes ?? ['*']).map((scope) => (
-                            <Badge key={scope}>{scope}</Badge>
+                            <Tag key={scope}>{scope}</Tag>
                           ))}
                         </div>
                       </td>
                       <td>
-                        <StatusBadge status={credential.status} />
+                        <StatusTag status={credential.status} />
                       </td>
-                      <td className="muted">
+                      <td className="panel__subtitle">
                         {credential.lastUsedAt ? new Date(credential.lastUsedAt).toLocaleString() : 'Never'}
                       </td>
                       <td>
@@ -151,7 +150,7 @@ export function ApiClientDetailPage() {
                           <div className="row">
                             <Button
                               variant="secondary"
-                              size="sm"
+                              
                               onClick={() =>
                                 void act(async () => {
                                   const result = await api.post<IssuedCredential>(
@@ -166,7 +165,7 @@ export function ApiClientDetailPage() {
                             </Button>
                             <Button
                               variant="ghost"
-                              size="sm"
+                              
                               onClick={() => {
                                 if (!window.confirm(`Revoke credential ${credential.keyId}? This cannot be undone.`))
                                   return
@@ -187,7 +186,7 @@ export function ApiClientDetailPage() {
               </table>
             </div>
           )}
-        </Card>
+        </Panel>
       </div>
 
       {issuing && (
@@ -213,25 +212,25 @@ export function ApiClientDetailPage() {
           onClose={() => setIssued(null)}
           footer={<Button onClick={() => setIssued(null)}>I have stored it</Button>}
         >
-          <Alert tone="warning" title="Copy this secret now">
+          <Notice tone="accent" title="Copy this secret now">
             It is shown once and cannot be retrieved later. If it is lost, rotate the credential.
-          </Alert>
+          </Notice>
           <code className="secret">{issued.secret}</code>
-          <p className="muted">
+          <p className="panel__subtitle">
             Key ID <span className="mono">{issued.keyId}</span> is safe to record in your configuration and logs.
           </p>
         </Dialog>
       )}
 
       {confirmDialog}
-    </>
+    </Screen>
   )
 }
 
 function Detail({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <dt className="muted" style={{ fontSize: 12 }}>
+      <dt className="panel__subtitle" style={{ fontSize: 12 }}>
         {label}
       </dt>
       <dd style={{ margin: 0 }}>{value}</dd>

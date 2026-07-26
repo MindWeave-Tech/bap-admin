@@ -1,28 +1,20 @@
 import { useEffect, useId, useRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react'
 import './ui.css'
 
-type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost'
+type ButtonVariant = 'primary' | 'secondary' | 'ghost'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
-  size?: 'sm' | 'md'
   loading?: boolean
 }
 
-export function Button({ variant = 'primary', size = 'md', loading = false, children, ...props }: ButtonProps) {
+export function Button({ variant = 'primary', loading = false, children, className, ...props }: ButtonProps) {
   return (
     <button
       type="button"
       {...props}
       disabled={props.disabled || loading}
-      className={[
-        'btn',
-        variant !== 'primary' ? `btn--${variant}` : '',
-        size === 'sm' ? 'btn--sm' : '',
-        props.className ?? '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      className={['btn', `btn-${variant}`, className].filter(Boolean).join(' ')}
     >
       {loading && <span className="spinner" aria-hidden="true" />}
       {children}
@@ -36,96 +28,129 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string
 }
 
-export function Field({ label, hint, error, ...props }: FieldProps) {
+export function Field({ label, hint, error, className, ...props }: FieldProps) {
   const id = useId()
   const describedBy = [hint ? `${id}-hint` : null, error ? `${id}-error` : null].filter(Boolean).join(' ')
 
   return (
     <div className="field">
-      <label className="field__label" htmlFor={id}>
-        {label}
-      </label>
+      <label htmlFor={id}>{label}</label>
       <input
         id={id}
         {...props}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
-        className={`input ${error ? 'input--invalid' : ''}`}
+        className={['input', className].filter(Boolean).join(' ')}
       />
       {hint && (
-        <span className="field__hint" id={`${id}-hint`}>
+        <div className="panel__subtitle" id={`${id}-hint`} style={{ marginTop: 'var(--space-1)' }}>
           {hint}
-        </span>
+        </div>
       )}
       {error && (
-        <span className="field__error" id={`${id}-error`}>
+        <div id={`${id}-error`} style={{ marginTop: 'var(--space-1)', fontSize: '12px', color: 'var(--color-accent-700)' }}>
           {error}
-        </span>
+        </div>
       )}
     </div>
   )
 }
 
-export function Card({
+export function Select({
+  label,
+  value,
+  onChange,
+  children,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  children: ReactNode
+}) {
+  const id = useId()
+
+  return (
+    <div className="field">
+      <label htmlFor={id}>{label}</label>
+      <select id={id} className="input" value={value} onChange={(event) => onChange(event.target.value)}>
+        {children}
+      </select>
+    </div>
+  )
+}
+
+/** The console's primary container: a surface with a ruled header. */
+export function Panel({
   title,
   subtitle,
   actions,
   children,
-  bodyless = false,
+  flush = false,
 }: {
   title?: ReactNode
   subtitle?: ReactNode
   actions?: ReactNode
   children: ReactNode
-  bodyless?: boolean
+  flush?: boolean
 }) {
   return (
-    <section className="card">
+    <section className="panel">
       {(title || actions) && (
-        <header className="card__header">
-          <div className="card__title">
-            {typeof title === 'string' ? <h2>{title}</h2> : title}
-            {subtitle && <span className="card__subtitle">{subtitle}</span>}
+        <header className="panel__header">
+          <div className="panel__heading">
+            {typeof title === 'string' ? <span className="panel__title">{title}</span> : title}
+            {subtitle && <span className="panel__subtitle">{subtitle}</span>}
           </div>
           {actions && <div className="row">{actions}</div>}
         </header>
       )}
-      {bodyless ? children : <div className="card__body">{children}</div>}
+      {flush ? children : <div className="panel__body">{children}</div>}
     </section>
   )
 }
 
-type BadgeTone = 'neutral' | 'success' | 'danger' | 'warning' | 'accent'
+type TagTone = 'neutral' | 'accent' | 'outline'
 
-export function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: BadgeTone }) {
-  return <span className={`badge ${tone !== 'neutral' ? `badge--${tone}` : ''}`}>{children}</span>
+export function Tag({ children, tone = 'neutral' }: { children: ReactNode; tone?: TagTone }) {
+  return <span className={`tag tag-${tone}`}>{children}</span>
 }
 
-/** Maps a lifecycle status string onto a badge tone. */
-export function StatusBadge({ status }: { status: string }) {
-  const tone: BadgeTone = ['active', 'delivered', 'processed', 'success'].includes(status.toLowerCase())
-    ? 'success'
-    : ['suspended', 'locked', 'revoked', 'disabled', 'failed', 'quarantined'].includes(status.toLowerCase())
-      ? 'danger'
-      : ['pending', 'retrying', 'sandbox'].includes(status.toLowerCase())
-        ? 'warning'
-        : 'neutral'
+/**
+ * The palette is mono by design, so status is carried by weight rather than
+ * hue: live and healthy states take the accent, everything else stays neutral.
+ */
+export function StatusTag({ status }: { status: string }) {
+  const value = status.toUpperCase()
+  const accented = [
+    'ACTIVE',
+    'SUCCESS',
+    'DELIVERED',
+    'PROCESSED',
+    'HEALTHY',
+    'MATCHED',
+    'PRODUCTION',
+    'APPROVED',
+  ].includes(value)
 
-  return <Badge tone={tone}>{status}</Badge>
+  const outlined = ['PENDING', 'PENDING_PROVIDER', 'UNKNOWN', 'MANUAL_REVIEW', 'RETRYING', 'QUEUED', 'VENDING'].includes(
+    value,
+  )
+
+  return <Tag tone={accented ? 'accent' : outlined ? 'outline' : 'neutral'}>{value}</Tag>
 }
 
-export function Alert({
-  tone = 'error',
+export function Notice({
+  tone = 'accent',
   title,
   children,
 }: {
-  tone?: 'error' | 'success' | 'warning'
+  tone?: 'accent' | 'neutral'
   title?: string
   children?: ReactNode
 }) {
   return (
-    <div className={`alert alert--${tone}`} role={tone === 'error' ? 'alert' : 'status'}>
-      {title && <span className="alert__title">{title}</span>}
+    <div className={`notice ${tone === 'neutral' ? 'notice--neutral' : ''}`} role={tone === 'accent' ? 'alert' : 'status'}>
+      {title && <span className="notice__title">{title}</span>}
       {children}
     </div>
   )
@@ -133,8 +158,8 @@ export function Alert({
 
 export function EmptyState({ title, children }: { title: string; children?: ReactNode }) {
   return (
-    <div className="empty">
-      <strong>{title}</strong>
+    <div className="state">
+      <span className="state__title">{title}</span>
       {children}
     </div>
   )
@@ -142,9 +167,11 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
 
 export function Loading({ label = 'Loading' }: { label?: string }) {
   return (
-    <div className="empty" role="status">
-      <span className="spinner" aria-hidden="true" />
-      <span className="muted">{label}…</span>
+    <div className="state" role="status">
+      <span className="row">
+        <span className="spinner" aria-hidden="true" />
+        <span>{label}…</span>
+      </span>
     </div>
   )
 }
@@ -175,12 +202,35 @@ export function Dialog({
   return (
     <div className="dialog-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <div className="dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} ref={ref}>
-        <header className="dialog__header">
-          <h2 id={titleId}>{title}</h2>
-        </header>
-        <div className="dialog__body">{children}</div>
-        {footer && <div className="dialog__footer">{footer}</div>}
+        <h2 className="dialog-title" id={titleId}>
+          {title}
+        </h2>
+        <div className="dialog-body stack-tight">{children}</div>
+        {footer && <div className="dialog-actions">{footer}</div>}
       </div>
+    </div>
+  )
+}
+
+/** A labelled definition list, the shape every detail screen uses. */
+export function Details({ children }: { children: ReactNode }) {
+  return <dl className="detail">{children}</dl>
+}
+
+export function Detail({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <>
+      <dt>{label}</dt>
+      <dd>{children}</dd>
+    </>
+  )
+}
+
+export function Stat({ value, label }: { value: ReactNode; label: string }) {
+  return (
+    <div className="stat">
+      <span className="stat__value">{value}</span>
+      <span className="stat__label">{label}</span>
     </div>
   )
 }

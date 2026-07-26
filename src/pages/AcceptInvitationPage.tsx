@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
 import { api, ApiError } from '../lib/api'
-import { Alert, Button, Field } from '../components/ui'
-import './login.css'
+import { AuthPoster } from '../components/layout/AuthPoster'
+import { Button, Field, Notice } from '../components/ui'
 
 export function AcceptInvitationPage() {
   const [params] = useSearchParams()
@@ -35,27 +35,21 @@ export function AcceptInvitationPage() {
   }
 
   return (
-    <div className="login">
+    <AuthPoster
+      kicker="Invitation"
+      title="Choose your password"
+      body="Set a password to activate your administrator account. Invitations expire 72 hours after they are issued."
+    >
       <form
-        className="login__card"
+        className="stack"
         onSubmit={(event) => {
           event.preventDefault()
           void submit()
         }}
       >
-        <div className="login__brand">
-          <span className="login__mark" aria-hidden="true">
-            BAP
-          </span>
-          <div>
-            <h1>Accept invitation</h1>
-            <p className="muted">Choose a password to activate your account</p>
-          </div>
-        </div>
-
-        {!token && <Alert>This link is missing its invitation token. Ask an administrator to reissue it.</Alert>}
-        {error && <Alert>{error}</Alert>}
-        {done && <Alert tone="success">Your account is active. Redirecting you to sign in…</Alert>}
+        {!token && <Notice>This link is missing its invitation token. Ask an administrator to reissue it.</Notice>}
+        {error && <Notice>{error}</Notice>}
+        {done && <Notice tone="neutral">Your account is active. Redirecting you to sign in…</Notice>}
 
         <Field
           label="Password"
@@ -74,13 +68,13 @@ export function AcceptInvitationPage() {
           value={confirmation}
           onChange={(event) => setConfirmation(event.target.value)}
         />
-        <Button type="submit" loading={busy} disabled={!token || done}>
+        <Button type="submit" loading={busy} disabled={!token || done} className="btn-block">
           Activate account
         </Button>
-        <Link to="/login" className="muted" style={{ fontSize: 12, textAlign: 'center' }}>
+        <Link to="/login" style={{ fontSize: '12px' }}>
           Back to sign in
         </Link>
       </form>
-    </div>
+    </AuthPoster>
   )
 }

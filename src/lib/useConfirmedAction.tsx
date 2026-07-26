@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { api, ApiError } from './api'
-import { Alert, Button, Dialog, Field } from '../components/ui'
+import { Button, Dialog, Field, Notice } from '../components/ui'
 
 /**
  * Runs an action that may require recent authentication (PRD §12.1).
@@ -64,10 +64,8 @@ export function useConfirmedAction() {
         </>
       }
     >
-      <p className="muted">
-        This action is sensitive, so it needs a recent password confirmation before it can proceed.
-      </p>
-      {error && <Alert>{error}</Alert>}
+      <p>This action is sensitive, so it needs a recent password confirmation before it can proceed.</p>
+      {error && <Notice>{error}</Notice>}
       <form
         onSubmit={(event) => {
           event.preventDefault()

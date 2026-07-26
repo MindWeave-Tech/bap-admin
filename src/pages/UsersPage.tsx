@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, ApiError } from '../lib/api'
 import type { AdminUser, RoleSummary } from '../lib/types'
-import { Alert, Badge, Button, Card, Dialog, EmptyState, Field, Loading, StatusBadge } from '../components/ui'
-import { PageHeader } from '../components/layout/PageHeader'
+import { Notice, Tag, Button, Panel, Dialog, EmptyState, Field, Loading, StatusTag } from '../components/ui'
+import { Screen } from '../components/layout/Screen'
 
 export function UsersPage() {
   const queryClient = useQueryClient()
@@ -23,29 +23,28 @@ export function UsersPage() {
   })
 
   return (
-    <>
-      <PageHeader
+      <Screen number="02"
         title="Users and roles"
         description="Administrator accounts, their roles, and account status. Suspending or locking an account ends its active sessions immediately."
         actions={<Button onClick={() => setInviting(true)}>Invite user</Button>}
-      />
+      >
 
       {statusMutation.isError && (
-        <div style={{ marginBottom: 14 }}>
-          <Alert>
+        <div style={{ marginBottom: "var(--space-4)" }}>
+          <Notice>
             {statusMutation.error instanceof ApiError
               ? statusMutation.error.message
               : 'Could not update the account.'}
-          </Alert>
+          </Notice>
         </div>
       )}
 
-      <Card bodyless>
+      <Panel flush>
         {users.isPending ? (
           <Loading label="Loading users" />
         ) : users.isError ? (
-          <div style={{ padding: 16 }}>
-            <Alert>Could not load users.</Alert>
+          <div style={{ padding: "var(--space-4)" }}>
+            <Notice>Could not load users.</Notice>
           </div>
         ) : users.data.length === 0 ? (
           <EmptyState title="No administrators yet">Invite your first administrator to get started.</EmptyState>
@@ -67,43 +66,43 @@ export function UsersPage() {
                   <tr key={user.id}>
                     <td>
                       <div style={{ fontWeight: 500 }}>{user.name}</div>
-                      <div className="muted">{user.email}</div>
+                      <div className="panel__subtitle">{user.email}</div>
                     </td>
                     <td>
-                      <StatusBadge status={user.status} />
+                      <StatusTag status={user.status} />
                     </td>
                     <td>
                       <div className="row">
                         {user.roles.length === 0 ? (
-                          <span className="muted">None</span>
+                          <span className="panel__subtitle">None</span>
                         ) : (
                           user.roles.map((role) => (
-                            <Badge key={role}>
+                            <Tag key={role}>
                               {roles.data?.find((candidate) => candidate.name === role)?.label ?? role}
-                            </Badge>
+                            </Tag>
                           ))
                         )}
                       </div>
                     </td>
                     <td>
                       {user.twoFactorEnabled ? (
-                        <Badge tone="success">Enabled</Badge>
+                        <Tag tone="neutral">Enabled</Tag>
                       ) : (
-                        <Badge tone="warning">Not enabled</Badge>
+                        <Tag tone="accent">Not enabled</Tag>
                       )}
                     </td>
-                    <td className="muted">
+                    <td className="panel__subtitle">
                       {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : 'Never'}
                     </td>
                     <td>
                       <div className="row">
-                        <Button variant="secondary" size="sm" onClick={() => setEditing(user)}>
+                        <Button variant="secondary"  onClick={() => setEditing(user)}>
                           Roles
                         </Button>
                         {user.status === 'active' ? (
                           <Button
                             variant="ghost"
-                            size="sm"
+                            
                             onClick={() => {
                               const reason = window.prompt('Reason for suspending this account?')
                               if (reason)
@@ -115,7 +114,7 @@ export function UsersPage() {
                         ) : (
                           <Button
                             variant="ghost"
-                            size="sm"
+                            
                             onClick={() =>
                               statusMutation.mutate({ user, status: 'active', reason: 'Reactivated by administrator.' })
                             }
@@ -131,7 +130,7 @@ export function UsersPage() {
             </table>
           </div>
         )}
-      </Card>
+      </Panel>
 
       {inviting && (
         <InviteDialog
@@ -170,7 +169,7 @@ export function UsersPage() {
           }}
         />
       )}
-    </>
+    </Screen>
   )
 }
 
@@ -210,7 +209,7 @@ function InviteDialog({
       }
     >
       {mutation.isError && Object.keys(fieldErrors).length === 0 && (
-        <Alert>{mutation.error instanceof ApiError ? mutation.error.message : 'Could not create the invitation.'}</Alert>
+        <Notice>{mutation.error instanceof ApiError ? mutation.error.message : 'Could not create the invitation.'}</Notice>
       )}
       <Field label="Full name" value={name} error={fieldErrors.name} onChange={(e) => setName(e.target.value)} />
       <Field
@@ -258,7 +257,7 @@ function RolesDialog({
         </>
       }
     >
-      {mutation.isError && <Alert>Could not update roles.</Alert>}
+      {mutation.isError && <Notice>Could not update roles.</Notice>}
       <RolePicker roles={roles} selected={selected} onChange={setSelected} />
     </Dialog>
   )
@@ -294,7 +293,7 @@ function RolePicker({
             />
             <span>
               {role.label}
-              <span className="muted"> · {role.permissions.length} permissions</span>
+              <span className="panel__subtitle"> · {role.permissions.length} permissions</span>
             </span>
           </label>
         ))}

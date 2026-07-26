@@ -1,47 +1,134 @@
-.login {
-  display: grid;
-  place-items: center;
+/* The sign-in poster: a red field carrying the brand statement beside the
+   form column. The accent runs as a full field here — the one place the
+   system allows it. */
+
+.auth {
   min-height: 100vh;
-  padding: 20px;
-  background: var(--bg);
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
 }
 
-.login__card {
+.auth__poster {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  width: 100%;
-  max-width: 380px;
-  padding: 24px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  padding: var(--space-8) var(--space-8) var(--space-6);
+  background: var(--color-accent);
+  color: var(--color-bg);
 }
 
-.login__brand {
+.auth__brand {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.auth__mark {
+  width: 52px;
+  height: 52px;
+  flex: none;
   display: flex;
   align-items: center;
-  gap: 11px;
-  margin-bottom: 4px;
+  justify-content: center;
+  border: 2px solid var(--color-bg);
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 26px;
+  line-height: 1;
 }
 
-.login__mark {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-sm);
-  background: var(--accent);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
+.auth__brand-name {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 24px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
-.login__brand h1 {
-  font-size: 17px;
+.auth__brand-org {
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-top: var(--space-1);
 }
 
-.login__brand p {
-  font-size: 12px;
+.auth__spacer {
+  flex: 1;
+}
+
+.auth__eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.auth__statement {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 52px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin-top: var(--space-4);
+  max-width: 15ch;
+  text-wrap: pretty;
+}
+
+.auth__note {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: var(--space-4);
+  max-width: 46ch;
+  opacity: 0.92;
+}
+
+.auth__form-column {
+  display: flex;
+  align-items: center;
+  padding: var(--space-8);
+}
+
+.auth__form {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth__kicker {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-2);
+}
+
+.auth__title {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 32px;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+
+.auth__body {
+  font-size: 13.5px;
+  color: var(--color-neutral-700);
+  margin: var(--space-2) 0 var(--space-6);
+}
+
+@media (max-width: 900px) {
+  .auth {
+    grid-template-columns: 1fr;
+  }
+
+  .auth__poster {
+    padding: var(--space-6);
+  }
+
+  .auth__statement {
+    font-size: 32px;
+  }
+
+  .auth__form-column {
+    padding: var(--space-6);
+  }
 }

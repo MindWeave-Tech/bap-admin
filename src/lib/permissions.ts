@@ -1,0 +1,33 @@
+/** Mirrors App\Modules\Identity\Enums\Permission on the API. */
+export const Permission = {
+  TransactionsView: 'transactions.view',
+  TransactionsExport: 'transactions.export',
+  TransactionsRequery: 'transactions.requery',
+  TransactionsResolve: 'transactions.resolve',
+  CustomerIdentifiersUnmask: 'customer_identifiers.unmask',
+  FulfilmentTokensView: 'fulfilment_tokens.view',
+  ProvidersView: 'providers.view',
+  ProvidersManage: 'providers.manage',
+  ProviderCredentialsView: 'provider_credentials.view',
+  ProviderCredentialsManage: 'provider_credentials.manage',
+  ProvidersToggle: 'providers.toggle',
+  ProviderBalancesView: 'provider_balances.view',
+  CatalogView: 'catalog.view',
+  CatalogManage: 'catalog.manage',
+  CatalogPublish: 'catalog.publish',
+  RoutingView: 'routing.view',
+  RoutingChange: 'routing.change',
+  RoutingApprove: 'routing.approve',
+  ApiClientsView: 'api_clients.view',
+  ApiClientsManage: 'api_clients.manage',
+  ApiCredentialsManage: 'api_credentials.manage',
+  WebhooksRetry: 'webhooks.retry',
+  ReconciliationView: 'reconciliation.view',
+  ReconciliationResolve: 'reconciliation.resolve',
+  UsersManage: 'users.manage',
+  RolesManage: 'roles.manage',
+  AuditLogsView: 'audit_logs.view',
+  ResellerPricingManage: 'reseller_pricing.manage',
+} as const
+
+export type PermissionName = (typeof Permission)[keyof typeof Permission]

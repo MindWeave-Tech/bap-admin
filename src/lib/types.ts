@@ -311,9 +311,28 @@ export interface ProviderSummary {
   activatedAt: string | null
 }
 
+export interface BreakerEvent {
+  from: string
+  to: string
+  reason: string
+  sampleSize: number
+  failureRatePercent: number
+  timeoutRatePercent: number
+  occurredAt: string
+}
+
+export interface BreakerDetail {
+  state: string
+  sampleSize: number
+  failureRatePercent: number
+  timeoutRatePercent: number
+  history: BreakerEvent[]
+}
+
 export interface ProviderDetail extends ProviderSummary {
   capabilities: { registered: boolean; declared: string[] }
   allowedTransitions: string[]
+  breaker: BreakerDetail
 }
 
 export interface ProviderCredentialSummary {

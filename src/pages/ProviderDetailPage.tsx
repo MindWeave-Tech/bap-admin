@@ -139,6 +139,42 @@ export function ProviderDetailPage() {
             </Details>
           </Panel>
 
+          <Panel
+            title="Circuit breaker"
+            subtitle="Trips on measured health; withholds new transactions only · PRD §12.16"
+          >
+            <Details>
+              <Detail label="State">
+                {data.breaker.state === 'CLOSED' ? (
+                  <Tag tone="outline">closed · admitting traffic</Tag>
+                ) : data.breaker.state === 'HALF_OPEN' ? (
+                  <Tag tone="accent">half-open · probing</Tag>
+                ) : (
+                  <Tag tone="accent">open · withholding new work</Tag>
+                )}
+              </Detail>
+              <Detail label="Recent health">
+                {data.breaker.sampleSize === 0
+                  ? 'No attempts in the window'
+                  : `${data.breaker.failureRatePercent}% failed, ${data.breaker.timeoutRatePercent}% timed out across ${data.breaker.sampleSize} attempts`}
+              </Detail>
+            </Details>
+            {data.breaker.history.length > 0 && (
+              <div className="stack" style={{ marginTop: 'var(--space-4)', gap: 'var(--space-2)' }}>
+                {data.breaker.history.slice(0, 5).map((event) => (
+                  <div key={event.occurredAt + event.to} style={{ fontSize: '13px' }}>
+                    <span className="mono">
+                      {event.from} → {event.to}
+                    </span>
+                    <div className="panel__subtitle">
+                      {new Date(event.occurredAt).toLocaleString()} · {event.reason}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Panel>
+
           <Panel title="Declared capabilities" subtitle="What the registered adapter says it supports · PRD §12.5">
             {data.capabilities.declared.length === 0 ? (
               <EmptyState title="Nothing declared">

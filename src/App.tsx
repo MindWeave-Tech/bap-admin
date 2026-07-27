@@ -11,6 +11,10 @@ import { UsersPage } from './pages/UsersPage'
 import { ApiClientsPage } from './pages/ApiClientsPage'
 import { ApiClientDetailPage } from './pages/ApiClientDetailPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { TransactionsPage } from './pages/TransactionsPage'
+import { TransactionDetailPage } from './pages/TransactionDetailPage'
+import { CatalogPage } from './pages/CatalogPage'
+import { AuditLogsPage } from './pages/AuditLogsPage'
 import type { ReactNode } from 'react'
 
 /** Waits for the session probe before deciding where to send the visitor. */
@@ -53,6 +57,46 @@ export default function App() {
         >
           <Route index element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route
+            path="transactions"
+            element={
+              <RequirePermission permission={Permission.TransactionsView}>
+                <TransactionsPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="transactions/:reference"
+            element={
+              <RequirePermission permission={Permission.TransactionsView}>
+                <TransactionDetailPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="manual-review"
+            element={
+              <RequirePermission permission={Permission.TransactionsView}>
+                <TransactionsPage manualReview />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="catalog"
+            element={
+              <RequirePermission permission={Permission.CatalogView}>
+                <CatalogPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="audit-logs"
+            element={
+              <RequirePermission permission={Permission.AuditLogsView}>
+                <AuditLogsPage />
+              </RequirePermission>
+            }
+          />
           <Route
             path="users"
             element={

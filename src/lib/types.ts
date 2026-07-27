@@ -93,3 +93,172 @@ export interface TwoFactorEnrolment {
   secret: string
   otpauthUri: string
 }
+
+export interface Money {
+  value: string
+  currency: string
+}
+
+export interface TransactionSummary {
+  transactionReference: string
+  clientReference: string
+  apiClient: { id: number; code: string | null; name: string | null }
+  categoryCode: string
+  billerCode: string
+  productCode: string
+  customerIdentifierMasked: string
+  amount: Money
+  status: string
+  terminal: boolean
+  selectedProviderCode: string | null
+  failure: { category: string | null; code: string | null; message: string | null } | null
+  requestedAt: string
+  completedAt: string | null
+}
+
+export interface ProviderAttemptDetail {
+  id: number
+  providerCode: string
+  environment: string
+  attemptNumber: number
+  providerVendReference: string
+  providerTransactionReference: string | null
+  providerProductCode: string | null
+  mappingVersion: number | null
+  status: string
+  mayHaveDeliveredValue: boolean
+  providerStatus: string | null
+  providerMessage: string | null
+  timeoutClassification: string | null
+  requeryCount: number
+  requestSentAt: string | null
+  responseReceivedAt: string | null
+}
+
+export interface StatusHistoryEntry {
+  from: string | null
+  to: string
+  actorType: string
+  actorId: string | null
+  reason: string | null
+  providerStatus: string | null
+  correlationId: string | null
+  at: string
+}
+
+export interface WebhookEventSummary {
+  id: number
+  providerCode: string
+  providerEventId: string | null
+  eventType: string | null
+  signatureVerified: boolean
+  processingStatus: string
+  processingAttempts: number
+  receivedAt: string
+  processedAt: string | null
+}
+
+export interface CallbackAttemptSummary {
+  id: number
+  eventId: string
+  eventType: string
+  status: string
+  attempts: number
+  lastResponseStatus: number | null
+  lastError: string | null
+  nextAttemptAt: string | null
+  deliveredAt: string | null
+}
+
+export interface TransactionDetail extends TransactionSummary {
+  customerIdentifier: string
+  customerIdentifierUnmasked: boolean
+  accountType: string | null
+  phoneNumber: string | null
+  network: string | null
+  validationReference: string | null
+  reconciliationStatus: string
+  metadata: Record<string, unknown> | null
+  fulfilment: Record<string, string> | null
+  paymentAuthorization: {
+    reference: string
+    sourceSystem: string
+    status: string
+    verifiedVia: string
+    verifiedAt: string
+    consumedAt: string | null
+    releasedAt: string | null
+  } | null
+  attempts: ProviderAttemptDetail[]
+  statusHistory: StatusHistoryEntry[]
+  webhookEvents: WebhookEventSummary[]
+  callbacks: CallbackAttemptSummary[]
+}
+
+export interface Paginated<T> {
+  data: T[]
+  meta: { total: number; perPage: number; currentPage: number; lastPage: number }
+}
+
+export interface AuditLogEntry {
+  id: number
+  action: string
+  actorType: string
+  actorLabel: string | null
+  resourceType: string | null
+  resourceId: string | null
+  beforeState: Record<string, unknown> | null
+  afterState: Record<string, unknown> | null
+  reason: string | null
+  ipAddress: string | null
+  correlationId: string | null
+  at: string
+}
+
+export interface CatalogProductNode {
+  code: string
+  name: string
+  status: string
+  vendable: boolean
+  amountType: string
+  minimum: string | null
+  maximum: string | null
+  currency: string
+}
+
+export interface CatalogBillerNode {
+  code: string
+  name: string
+  status: string
+  customerIdentifierType: string | null
+  validationRequired: boolean
+  products: CatalogProductNode[]
+}
+
+export interface CatalogCategoryNode {
+  code: string
+  name: string
+  country: string
+  currency: string
+  status: string
+  billers: CatalogBillerNode[]
+}
+
+export interface ProviderMappingRow {
+  id: number
+  productCode: string
+  billerCode: string
+  providerCode: string
+  environment: string
+  providerBillerCode: string
+  providerProductCode: string
+  minimum: string | null
+  maximum: string | null
+  enabled: boolean
+  priority: number
+  version: number
+  live: boolean
+  effectiveFrom: string | null
+  effectiveTo: string | null
+  lastSynchronizedAt: string | null
+}

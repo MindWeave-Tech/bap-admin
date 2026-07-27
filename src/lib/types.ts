@@ -368,3 +368,59 @@ export interface EnablementEvaluation {
   providerIneligibilityReason: string | null
   wouldServe: boolean
 }
+
+export interface RoutingPolicySummary {
+  id: number
+  scope: string
+  scopeValue: string | null
+  environment: string
+  providerOrder: string[]
+  version: number
+  effectiveFrom: string
+  /** False while a future-dated policy is still scheduled. */
+  inForce: boolean
+  reason: string
+  author: string | null
+  changeRequestId: number | null
+}
+
+export interface RoutingChangeRequestSummary {
+  id: number
+  scope: string
+  scopeValue: string | null
+  environment: string
+  proposedOrder: string[]
+  reason: string
+  expectedImpact: string
+  rollbackPlan: string
+  effectiveAt: string | null
+  status: string
+  awaitingReview: boolean
+  breakGlass: boolean
+  requestedBy: string | null
+  reviewedBy: string | null
+  reviewedAt: string | null
+  reviewNote: string | null
+  appliedAt: string | null
+  appliedPolicyId: number | null
+}
+
+export interface RoutingSimulation {
+  selectedProviderCode: string | null
+  policyVersion: number | null
+  /** Set when the caller supplied an order to try rather than using the live policy. */
+  simulatedOrder: string[] | null
+  candidates: RoutingCandidate[]
+}
+
+export interface BreakerExclusion {
+  id: number
+  providerCode: string
+  from: string
+  to: string
+  reason: string
+  sampleSize: number
+  failureRatePercent: number
+  timeoutRatePercent: number
+  occurredAt: string
+}

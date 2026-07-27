@@ -15,6 +15,7 @@ import { TransactionsPage } from './pages/TransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { CatalogPage } from './pages/CatalogPage'
 import { ProvidersPage } from './pages/ProvidersPage'
+import { RoutingPage } from './pages/RoutingPage'
 import { ProviderDetailPage } from './pages/ProviderDetailPage'
 import { AuditLogsPage } from './pages/AuditLogsPage'
 import type { ReactNode } from 'react'
@@ -96,6 +97,14 @@ export default function App() {
             element={
               <RequirePermission permission={Permission.ProvidersView}>
                 <ProviderDetailPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="routing"
+            element={
+              <RequirePermission permission={Permission.RoutingView}>
+                <RoutingPage />
               </RequirePermission>
             }
           />

@@ -210,6 +210,78 @@ export function TransactionDetailPage() {
           </div>
         </Panel>
 
+        <Panel
+          title="Routing decision"
+          subtitle="Why this provider — recorded before any provider was contacted · PRD §12.7"
+          flush
+        >
+          {txn.routingDecision === null ? (
+            <EmptyState title="No routing decision recorded">
+              The transaction failed before provider selection.
+            </EmptyState>
+          ) : (
+            <>
+              <div className="panel__body" style={{ paddingBottom: 0 }}>
+                <Details>
+                  <Detail label="Selected">
+                    {txn.routingDecision.selectedProviderCode ? (
+                      <>
+                        {txn.routingDecision.selectedProviderCode}
+                        {txn.routingDecision.selectedMappingVersion && (
+                          <span className="panel__subtitle"> · mapping v{txn.routingDecision.selectedMappingVersion}</span>
+                        )}
+                      </>
+                    ) : (
+                      <Tag>none eligible</Tag>
+                    )}
+                  </Detail>
+                  <Detail label="Considered">
+                    {txn.routingDecision.eligibleCount} eligible, {txn.routingDecision.excludedCount} excluded
+                  </Detail>
+                  <Detail label="Policy">
+                    <span className="mono">{txn.routingDecision.policy}</span>
+                  </Detail>
+                </Details>
+              </div>
+              <div className="table-wrap" style={{ marginTop: 'var(--space-4)' }}>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Provider</th>
+                      <th>Outcome</th>
+                      <th>Priority</th>
+                      <th>Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {txn.routingDecision.candidates.map((candidate) => (
+                      <tr key={candidate.providerCode}>
+                        <td>
+                          <div>{candidate.providerCode}</div>
+                          {candidate.providerProductCode && (
+                            <div className="panel__subtitle mono">{candidate.providerProductCode}</div>
+                          )}
+                        </td>
+                        <td>
+                          {candidate.providerCode === txn.routingDecision?.selectedProviderCode ? (
+                            <Tag tone="accent">selected</Tag>
+                          ) : candidate.eligible ? (
+                            <Tag tone="outline">eligible</Tag>
+                          ) : (
+                            <Tag>excluded</Tag>
+                          )}
+                        </td>
+                        <td className="mono">{candidate.priority ?? '—'}</td>
+                        <td className="panel__subtitle">{candidate.reason ?? '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </Panel>
+
         <Panel title="Provider attempts" subtitle="Append-only · PRD §12.12" flush>
           {txn.attempts.length === 0 ? (
             <EmptyState title="No provider attempt was made" />

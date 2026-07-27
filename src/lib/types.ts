@@ -170,7 +170,27 @@ export interface CallbackAttemptSummary {
   deliveredAt: string | null
 }
 
+export interface RoutingCandidate {
+  providerCode: string
+  eligible: boolean
+  reason: string | null
+  priority: number | null
+  mappingVersion: number | null
+  providerProductCode: string | null
+}
+
+export interface RoutingDecisionDetail {
+  policy: string
+  selectedProviderCode: string | null
+  selectedMappingVersion: number | null
+  eligibleCount: number
+  excludedCount: number
+  candidates: RoutingCandidate[]
+  decidedAt: string
+}
+
 export interface TransactionDetail extends TransactionSummary {
+  routingDecision: RoutingDecisionDetail | null
   customerIdentifier: string
   customerIdentifierUnmasked: boolean
   accountType: string | null

@@ -262,3 +262,68 @@ export interface ProviderMappingRow {
   effectiveTo: string | null
   lastSynchronizedAt: string | null
 }
+
+export interface ProviderSummary {
+  id: number
+  code: string
+  environment: string
+  name: string
+  description: string | null
+  adapter: string
+  baseUrl: string | null
+  status: string
+  acceptsNewTraffic: boolean
+  ineligibilityReason: string | null
+  priority: number
+  supportedCountries: string[]
+  supportedCurrencies: string[]
+  connectTimeoutSeconds: number
+  requestTimeoutSeconds: number
+  rateLimitPerMinute: number | null
+  dailyLimitMinor: number | null
+  balanceWarningThresholdMinor: number | null
+  maintenanceFrom: string | null
+  maintenanceTo: string | null
+  supportContact: string | null
+  escalationContact: string | null
+  activatedAt: string | null
+}
+
+export interface ProviderDetail extends ProviderSummary {
+  capabilities: { registered: boolean; declared: string[] }
+  allowedTransitions: string[]
+}
+
+export interface ProviderCredentialSummary {
+  id: number
+  name: string
+  fingerprint: string | null
+  version: number
+  status: string
+  activatedAt: string | null
+  supersededAt: string | null
+  expiresAt: string | null
+  lastUsedAt: string | null
+}
+
+export interface EnablementRule {
+  id: number
+  scope: string
+  scopeValue: string | null
+  enabled: boolean
+  reason: string | null
+}
+
+export interface EnablementMatrix {
+  policy: string
+  rules: EnablementRule[]
+}
+
+export interface EnablementEvaluation {
+  enabledByRules: boolean
+  reason: string
+  decidingRule: { scope: string; scopeValue: string | null; enabled: boolean } | null
+  providerAcceptsTraffic: boolean
+  providerIneligibilityReason: string | null
+  wouldServe: boolean
+}

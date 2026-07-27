@@ -31,7 +31,7 @@ const NAV: NavGroup[] = [
   {
     label: 'Network',
     items: [
-      { to: '/providers', label: 'Providers', permission: Permission.ProvidersView, upcoming: true },
+      { to: '/providers', label: 'Providers', permission: Permission.ProvidersView },
       { to: '/routing', label: 'Routing', permission: Permission.RoutingView, upcoming: true },
       { to: '/catalog', label: 'Service catalog', permission: Permission.CatalogView },
       { to: '/reconciliation', label: 'Reconciliation', permission: Permission.ReconciliationView, upcoming: true },

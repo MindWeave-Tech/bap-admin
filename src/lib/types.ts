@@ -180,6 +180,7 @@ export interface RoutingCandidate {
 }
 
 export interface RoutingDecisionDetail {
+  attemptNumber: number
   policy: string
   selectedProviderCode: string | null
   selectedMappingVersion: number | null
@@ -190,7 +191,8 @@ export interface RoutingDecisionDetail {
 }
 
 export interface TransactionDetail extends TransactionSummary {
-  routingDecision: RoutingDecisionDetail | null
+  /** One decision per provider attempt, in attempt order. */
+  routingDecisions: RoutingDecisionDetail[]
   customerIdentifier: string
   customerIdentifierUnmasked: boolean
   accountType: string | null

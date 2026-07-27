@@ -211,74 +211,76 @@ export function TransactionDetailPage() {
         </Panel>
 
         <Panel
-          title="Routing decision"
+          title={txn.routingDecisions.length > 1 ? 'Routing decisions' : 'Routing decision'}
           subtitle="Why this provider — recorded before any provider was contacted · PRD §12.7"
           flush
         >
-          {txn.routingDecision === null ? (
+          {txn.routingDecisions.length === 0 ? (
             <EmptyState title="No routing decision recorded">
               The transaction failed before provider selection.
             </EmptyState>
           ) : (
-            <>
-              <div className="panel__body" style={{ paddingBottom: 0 }}>
-                <Details>
-                  <Detail label="Selected">
-                    {txn.routingDecision.selectedProviderCode ? (
-                      <>
-                        {txn.routingDecision.selectedProviderCode}
-                        {txn.routingDecision.selectedMappingVersion && (
-                          <span className="panel__subtitle"> · mapping v{txn.routingDecision.selectedMappingVersion}</span>
-                        )}
-                      </>
-                    ) : (
-                      <Tag>none eligible</Tag>
-                    )}
-                  </Detail>
-                  <Detail label="Considered">
-                    {txn.routingDecision.eligibleCount} eligible, {txn.routingDecision.excludedCount} excluded
-                  </Detail>
-                  <Detail label="Policy">
-                    <span className="mono">{txn.routingDecision.policy}</span>
-                  </Detail>
-                </Details>
-              </div>
-              <div className="table-wrap" style={{ marginTop: 'var(--space-4)' }}>
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Provider</th>
-                      <th>Outcome</th>
-                      <th>Priority</th>
-                      <th>Reason</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {txn.routingDecision.candidates.map((candidate) => (
-                      <tr key={candidate.providerCode}>
-                        <td>
-                          <div>{candidate.providerCode}</div>
-                          {candidate.providerProductCode && (
-                            <div className="panel__subtitle mono">{candidate.providerProductCode}</div>
+            txn.routingDecisions.map((decision) => (
+              <div key={decision.attemptNumber} className="stack" style={{ gap: 0 }}>
+                <div className="panel__body" style={{ paddingBottom: 0 }}>
+                  <Details>
+                    <Detail label={`Attempt ${decision.attemptNumber} selected`}>
+                      {decision.selectedProviderCode ? (
+                        <>
+                          {decision.selectedProviderCode}
+                          {decision.selectedMappingVersion !== null && (
+                            <span className="panel__subtitle"> · mapping v{decision.selectedMappingVersion}</span>
                           )}
-                        </td>
-                        <td>
-                          {candidate.providerCode === txn.routingDecision?.selectedProviderCode ? (
-                            <Tag tone="accent">selected</Tag>
-                          ) : candidate.eligible ? (
-                            <Tag tone="outline">eligible</Tag>
-                          ) : (
-                            <Tag>excluded</Tag>
-                          )}
-                        </td>
-                        <td className="mono">{candidate.priority ?? '—'}</td>
-                        <td className="panel__subtitle">{candidate.reason ?? '—'}</td>
+                        </>
+                      ) : (
+                        <Tag>none eligible</Tag>
+                      )}
+                    </Detail>
+                    <Detail label="Considered">
+                      {decision.eligibleCount} eligible, {decision.excludedCount} excluded
+                    </Detail>
+                    <Detail label="Policy">
+                      <span className="mono">{decision.policy}</span>
+                    </Detail>
+                  </Details>
+                </div>
+                <div className="table-wrap" style={{ marginTop: 'var(--space-4)' }}>
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Provider</th>
+                        <th>Outcome</th>
+                        <th>Priority</th>
+                        <th>Reason</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {decision.candidates.map((candidate) => (
+                        <tr key={candidate.providerCode}>
+                          <td>
+                            <div>{candidate.providerCode}</div>
+                            {candidate.providerProductCode && (
+                              <div className="panel__subtitle mono">{candidate.providerProductCode}</div>
+                            )}
+                          </td>
+                          <td>
+                            {candidate.providerCode === decision.selectedProviderCode ? (
+                              <Tag tone="accent">selected</Tag>
+                            ) : candidate.eligible ? (
+                              <Tag tone="outline">eligible</Tag>
+                            ) : (
+                              <Tag>excluded</Tag>
+                            )}
+                          </td>
+                          <td className="mono">{candidate.priority ?? '—'}</td>
+                          <td className="panel__subtitle">{candidate.reason ?? '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </>
+            ))
           )}
         </Panel>
 

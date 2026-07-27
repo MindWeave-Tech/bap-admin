@@ -73,6 +73,13 @@
   color: var(--color-neutral-600);
 }
 
+/* Production is the environment an operator must never mistake for a
+   rehearsal, so it is the one that takes the accent. */
+.shell__environment--live {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
 .shell__nav {
   flex: 1;
   overflow-y: auto;

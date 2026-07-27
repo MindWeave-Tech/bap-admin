@@ -10,6 +10,8 @@
  *    instead of showing a dead end.
  */
 
+import { config } from './config'
+
 export interface ApiErrorDetail {
   field?: string
   message: string
@@ -106,7 +108,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   const { method = 'GET', body, anonymous = false } = options
   const token = tokenStore.get()
 
-  const response = await fetch(`/api${path}`, {
+  const response = await fetch(`${config.apiBaseUrl}${path}`, {
     method,
     headers: {
       Accept: 'application/json',

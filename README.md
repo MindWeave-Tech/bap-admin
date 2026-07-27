@@ -12,10 +12,23 @@ No component library: a small set of accessible primitives lives in [src/compone
 
 ```bash
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-Requests to `/api` are proxied to `http://localhost:8000` (override with `VITE_API_TARGET`), so the browser sees one origin and no CORS configuration is needed. Start the API first — see the API repository's README.
+Start the API first — see the API repository's `docs/running-locally.md`.
+
+## Configuration
+
+Configuration lives in `.env`; [.env.example](.env.example) is the committed template and documents each value. `.env` itself is not committed.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `VITE_API_BASE_URL` | `/api` | Where the console sends API requests. Keep the default to use the dev proxy; set an absolute URL when the API is on another origin. |
+| `VITE_API_PROXY_TARGET` | `http://localhost:8000` | Development only — where the dev server forwards API requests, so the browser sees one origin and no CORS setup is needed. |
+| `VITE_ENVIRONMENT` | `local` | `local`, `sandbox` or `production`. Shown in the sidebar; `production` is rendered in the accent colour so an operator can never mistake it for a rehearsal. |
+
+Only `VITE_`-prefixed variables reach the browser, and Vite inlines them into the bundle at build time — so **every value is public**. Never put a secret in `.env`. Values are read once through [src/lib/config.ts](src/lib/config.ts), which applies the defaults above; nothing else reads `import.meta.env` directly.
 
 ## What is implemented
 

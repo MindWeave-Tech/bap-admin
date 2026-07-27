@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router'
 import { useAuth } from '../../lib/auth-context'
+import { config, isProduction } from '../../lib/config'
 import { Permission, type PermissionName } from '../../lib/permissions'
 import { Tag } from '../ui'
 import './shell.css'
@@ -81,7 +82,7 @@ export function AppShell() {
           </div>
           <div className="shell__brand-meta">
             <span>Biller aggregation</span>
-            <span>v1.2</span>
+            <span className={isProduction ? 'shell__environment--live' : undefined}>{config.environment}</span>
           </div>
         </div>
 

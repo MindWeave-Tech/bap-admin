@@ -14,6 +14,7 @@ import { ProfilePage } from './pages/ProfilePage'
 import { TransactionsPage } from './pages/TransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { CatalogPage } from './pages/CatalogPage'
+import { CatalogSyncPage } from './pages/CatalogSyncPage'
 import { ProvidersPage } from './pages/ProvidersPage'
 import { RoutingPage } from './pages/RoutingPage'
 import { ProviderDetailPage } from './pages/ProviderDetailPage'
@@ -97,6 +98,14 @@ export default function App() {
             element={
               <RequirePermission permission={Permission.ProvidersView}>
                 <ProviderDetailPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="catalog/sync"
+            element={
+              <RequirePermission permission={Permission.CatalogView}>
+                <CatalogSyncPage />
               </RequirePermission>
             }
           />

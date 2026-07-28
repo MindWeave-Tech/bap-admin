@@ -455,3 +455,38 @@ export interface Overview {
     varianceAvailable: boolean
   }
 }
+
+export interface CatalogSyncRun {
+  id: number
+  providerCode: string
+  environment: string
+  status: string
+  counts: { new: number; changed: number; removed: number; unchanged: number }
+  errorMessage: string | null
+  startedAt: string
+  completedAt: string | null
+  /** How many items still need a decision — the reason to open the queue. */
+  pendingItems: number
+}
+
+export interface CatalogSyncItem {
+  id: number
+  runId: number
+  providerCode: string | null
+  environment: string | null
+  changeType: string
+  providerCategoryCode: string | null
+  providerBillerCode: string | null
+  providerProductCode: string
+  providerProductName: string | null
+  differences: Record<string, { from?: unknown; to?: unknown }>
+  providerPayload: Record<string, unknown>
+  suggestedProduct: { code: string; name: string } | null
+  /** True when approval cannot proceed until an internal product is chosen. */
+  requiresProductChoice: boolean
+  currentMapping: { id: number; version: number } | null
+  reviewStatus: string
+  reviewedBy: string | null
+  reviewedAt: string | null
+  reviewNote: string | null
+}

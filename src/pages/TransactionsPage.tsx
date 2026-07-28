@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { api } from '../lib/api'
-import type { Paginated, TransactionSummary } from '../lib/types'
+import type { Paginated, TransactionAging, TransactionSummary } from '../lib/types'
 import { Screen } from '../components/layout/Screen'
-import { Button, EmptyState, Loading, Notice, Panel, Select, StatusTag } from '../components/ui'
+import { Button, EmptyState, Loading, Notice, Panel, Select, Stat, StatusTag } from '../components/ui'
 
 const STATUSES = [
   'RECEIVED',
@@ -21,11 +21,64 @@ const STATUSES = [
   'CANCELLED',
 ]
 
+/** What an operator reads, rather than the raw bucket edge in minutes. */
+const AGE_LABELS: Record<string, string> = {
+  '60': 'under 1h',
+  '360': '1–6h',
+  '1440': '6–24h',
+  older: 'over 24h',
+}
+
+/**
+ * How long the queue has been waiting, above the queue itself.
+ *
+ * The last bucket is separated out rather than shown as one more column: past
+ * 24 hours automated requery has given up, so those are the only ones that
+ * cannot resolve without somebody.
+ */
+function AgingBar({ aging }: { aging: TransactionAging }) {
+  const buckets = [...aging.bucketMinutes.map(String), 'older']
+
+  return (
+    <Panel title="Waiting" subtitle="Funds stay reserved until each of these settles · PRD §12.15">
+      <div className="grid-4">
+        {buckets.map((bucket) => {
+          const count = aging.counts[bucket] ?? 0
+          const overdue = bucket === 'older' && count > 0
+
+          return (
+            <Stat
+              key={bucket}
+              value={overdue ? <span style={{ color: 'var(--accent)' }}>{count}</span> : count}
+              label={AGE_LABELS[bucket] ?? bucket}
+            />
+          )
+        })}
+      </div>
+
+      {aging.beyondBoundary > 0 && (
+        <p className="panel__subtitle" style={{ marginTop: 'var(--space-3)' }}>
+          {aging.beyondBoundary} past the 24-hour requery window. Nothing further will happen to these automatically —
+          resolve them against provider evidence, never against the fact that they are old.
+        </p>
+      )}
+    </Panel>
+  )
+}
+
 export function TransactionsPage({ manualReview = false }: { manualReview?: boolean }) {
   const [search, setSearch] = useState('')
   const [submitted, setSubmitted] = useState('')
   const [status, setStatus] = useState('')
   const [page, setPage] = useState(1)
+
+  // Only on the review queue: on the full transaction list most rows are
+  // settled, and ageing them would say nothing.
+  const aging = useQuery({
+    queryKey: ['transactions', 'aging', { manualReview }],
+    queryFn: () => api.get<TransactionAging>(`/admin/transactions/aging?manualReview=${manualReview ? 1 : 0}`),
+    enabled: manualReview,
+  })
 
   const query = useQuery({
     queryKey: ['transactions', { submitted, status, page, manualReview }],
@@ -51,6 +104,8 @@ export function TransactionsPage({ manualReview = false }: { manualReview?: bool
       }
     >
       <div className="stack">
+        {manualReview && aging.data && aging.data.total > 0 && <AgingBar aging={aging.data} />}
+
         {!manualReview && (
           <Panel>
             <form

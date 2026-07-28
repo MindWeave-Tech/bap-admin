@@ -506,3 +506,12 @@ export interface CallbackRow {
   deliveredAt: string | null
   createdAt: string | null
 }
+
+export interface TransactionAging {
+  bucketMinutes: number[]
+  /** Keyed by bucket edge in minutes, plus 'older'. */
+  counts: Record<string, number>
+  total: number
+  /** Past the last edge automated requery has given up; these need a person. */
+  beyondBoundary: number
+}

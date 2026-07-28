@@ -55,6 +55,14 @@ body {
   gap: var(--space-4);
 }
 
+/* Narrower minimum than grid-3 so four short figures — the aging buckets —
+   sit on one row at a usable width instead of wrapping to two. */
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-4);
+}
+
 .kicker {
   font-size: 10px;
   letter-spacing: 0.13em;

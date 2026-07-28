@@ -14,6 +14,7 @@ import { ProfilePage } from './pages/ProfilePage'
 import { TransactionsPage } from './pages/TransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { CatalogPage } from './pages/CatalogPage'
+import { ReconciliationPage } from './pages/ReconciliationPage'
 import { CatalogSyncPage } from './pages/CatalogSyncPage'
 import { CallbacksPage } from './pages/CallbacksPage'
 import { ProvidersPage } from './pages/ProvidersPage'
@@ -132,6 +133,14 @@ export default function App() {
             element={
               <RequirePermission permission={Permission.RoutingView}>
                 <RoutingPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="reconciliation"
+            element={
+              <RequirePermission permission={Permission.ReconciliationView}>
+                <ReconciliationPage />
               </RequirePermission>
             }
           />

@@ -563,3 +563,70 @@ export interface ProviderHealthDetail {
   evaluatedAt: string | null
   override: { state: string; reason: string; expiresAt: string; setBy: string | null } | null
 }
+
+export interface ReconciliationImportRow {
+  id: number
+  source: string
+  filename: string | null
+  digest: string
+  rowCount: number
+  acceptedCount: number
+  rejectedCount: number
+  /** A superseded import is what the provider said before they changed their story. */
+  supersededAt: string | null
+  live: boolean
+  importedBy: string | null
+  importedAt: string
+  rejections: { rowNumber: number; reason: string; raw: string | null }[]
+}
+
+export interface ReconciliationBatchRow {
+  id: number
+  providerCode: string
+  environment: string
+  windowStartsAt: string
+  windowEndsAt: string
+  status: string
+  internalCount: number
+  externalCount: number
+  matchedCount: number
+  varianceCount: number
+  /** Null means never compared, which is not the same as compared and clean. */
+  matchedAt: string | null
+  openedBy: string | null
+  imports?: ReconciliationImportRow[]
+}
+
+export interface VarianceRow {
+  id: number
+  batchId: number
+  providerCode: string | null
+  status: string
+  /** How much the finding matters. The queue is ordered by this, not by age. */
+  consequence: number
+  detail: string | null
+  internal: {
+    reference: string | null
+    transactionReference: string | null
+    amountMinor: number | null
+    status: string | null
+    /** Only the corrections the state machine would actually accept. */
+    correctableTo: string[]
+  } | null
+  external: {
+    reference: string | null
+    amountMinor: number | null
+    outcome: string | null
+    /** What the statement literally said, beside what it was read as. */
+    providerStatusRaw: string | null
+    rowNumber: number | null
+  } | null
+  resolvedAt: string | null
+  resolvedBy: string | null
+  resolutionReason: string | null
+}
+
+export interface VarianceQueue {
+  data: VarianceRow[]
+  meta: { page: number; perPage: number; total: number; lastPage: number }
+}

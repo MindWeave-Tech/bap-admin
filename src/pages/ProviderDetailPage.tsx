@@ -140,6 +140,54 @@ export function ProviderDetailPage() {
           </Panel>
 
           <Panel
+            title="Health"
+            subtitle="What the traffic says, as distinct from the status somebody declared · PRD §12.16"
+          >
+            <Details>
+              <Detail label="State">
+                {data.health.state === 'HEALTHY' ? (
+                  <Tag tone="outline">healthy</Tag>
+                ) : data.health.state === 'UNKNOWN' ? (
+                  <Tag>not enough data</Tag>
+                ) : (
+                  <Tag tone="accent">{data.health.state.toLowerCase().replaceAll('_', ' ')}</Tag>
+                )}
+                {data.health.override !== null && <Tag>pinned by hand</Tag>}
+              </Detail>
+
+              {data.health.override !== null && (
+                <Detail label="Override">
+                  {/* Both are shown: "healthy because somebody said so" and
+                      "healthy because the traffic says so" are different
+                      claims. */}
+                  <div>{data.health.override.reason}</div>
+                  <div className="panel__subtitle">
+                    Set by {data.health.override.setBy ?? 'unknown'} · expires{' '}
+                    {new Date(data.health.override.expiresAt).toLocaleString()}
+                    {data.health.derivedState !== null && ` · metrics say ${data.health.derivedState.toLowerCase()}`}
+                  </div>
+                </Detail>
+              )}
+
+              <Detail label="Measured">
+                {data.health.metrics === null || data.health.metrics.sampleSize === 0
+                  ? 'No attempts in the window'
+                  : `${data.health.metrics.failureRatePercent}% failed, ${data.health.metrics.timeoutRatePercent}% timed out, ${data.health.metrics.pendingRatePercent}% pending across ${data.health.metrics.sampleSize} attempts`}
+              </Detail>
+
+              <Detail label="Median latency">
+                {data.health.metrics?.medianLatencyMs == null
+                  ? '—'
+                  : `${data.health.metrics.medianLatencyMs} ms`}
+              </Detail>
+
+              {data.health.evaluatedAt !== null && (
+                <Detail label="Evaluated">{new Date(data.health.evaluatedAt).toLocaleString()}</Detail>
+              )}
+            </Details>
+          </Panel>
+
+          <Panel
             title="Circuit breaker"
             subtitle="Trips on measured health; withholds new transactions only · PRD §12.16"
           >

@@ -17,6 +17,7 @@ import { CatalogPage } from './pages/CatalogPage'
 import { CatalogSyncPage } from './pages/CatalogSyncPage'
 import { CallbacksPage } from './pages/CallbacksPage'
 import { ProvidersPage } from './pages/ProvidersPage'
+import { BalancesPage } from './pages/BalancesPage'
 import { RoutingPage } from './pages/RoutingPage'
 import { ProviderDetailPage } from './pages/ProviderDetailPage'
 import { AuditLogsPage } from './pages/AuditLogsPage'
@@ -115,6 +116,14 @@ export default function App() {
             element={
               <RequirePermission permission={Permission.TransactionsView}>
                 <CallbacksPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="balances"
+            element={
+              <RequirePermission permission={Permission.ProviderBalancesView}>
+                <BalancesPage />
               </RequirePermission>
             }
           />

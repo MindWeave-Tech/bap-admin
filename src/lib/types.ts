@@ -333,6 +333,7 @@ export interface ProviderDetail extends ProviderSummary {
   capabilities: { registered: boolean; declared: string[] }
   allowedTransitions: string[]
   breaker: BreakerDetail
+  health: ProviderHealthDetail
 }
 
 export interface ProviderCredentialSummary {
@@ -514,4 +515,51 @@ export interface TransactionAging {
   total: number
   /** Past the last edge automated requery has given up; these need a person. */
   beyondBoundary: number
+}
+
+export interface BalanceSnapshot {
+  id: number
+  providerCode: string
+  currency: string
+  availableMinor: number
+  source: string
+  takenAt: string
+  recordedBy: string | null
+  approvedAt: string | null
+  /** A manual entry is a proposal until somebody else countersigns it. */
+  awaitingApproval: boolean
+  rejectedReason: string | null
+  note: string | null
+}
+
+export interface BalanceRegisterRow {
+  providerCode: string
+  environment: string
+  balance: BalanceSnapshot | null
+  /** Too old to act on — reported as unknown rather than as a low balance. */
+  stale: boolean
+  alertLevel: string | null
+  estimatedVends: number | null
+  thresholds: { warningMinor: number | null; criticalMinor: number | null }
+}
+
+export interface BalanceRegister {
+  register: BalanceRegisterRow[]
+  awaitingApproval: BalanceSnapshot[]
+}
+
+export interface ProviderHealthDetail {
+  state: string
+  /** What the metrics say, shown even when an override is in force. */
+  derivedState: string | null
+  reason: string | null
+  metrics: {
+    sampleSize: number
+    failureRatePercent: number
+    timeoutRatePercent: number
+    pendingRatePercent: number
+    medianLatencyMs: number | null
+  } | null
+  evaluatedAt: string | null
+  override: { state: string; reason: string; expiresAt: string; setBy: string | null } | null
 }

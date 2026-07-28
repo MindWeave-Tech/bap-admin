@@ -25,6 +25,7 @@ const NAV: NavGroup[] = [
       { to: '/', label: 'Overview' },
       { to: '/transactions', label: 'Transactions', permission: Permission.TransactionsView },
       { to: '/manual-review', label: 'Manual review', permission: Permission.TransactionsView },
+      { to: '/callbacks', label: 'Client callbacks', permission: Permission.TransactionsView },
       { to: '/incidents', label: 'Incidents', permission: Permission.TransactionsView, upcoming: true },
     ],
   },

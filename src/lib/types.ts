@@ -490,3 +490,19 @@ export interface CatalogSyncItem {
   reviewedAt: string | null
   reviewNote: string | null
 }
+
+export interface CallbackRow {
+  id: number
+  eventId: string
+  eventType: string
+  status: string
+  attempts: number
+  lastResponseStatus: number | null
+  lastError: string | null
+  callbackUrl: string
+  apiClient: { id: number; name: string | null; code: string | null }
+  transactionReference: string | null
+  nextAttemptAt: string | null
+  deliveredAt: string | null
+  createdAt: string | null
+}

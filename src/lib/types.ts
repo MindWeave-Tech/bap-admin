@@ -424,3 +424,34 @@ export interface BreakerExclusion {
   timeoutRatePercent: number
   occurredAt: string
 }
+
+export interface OverviewAging {
+  bucketMinutes: number[]
+  byStatus: Record<string, Record<string, number>>
+  /** Past 24 hours nothing resolves itself — these need a human today. */
+  beyondManualReviewBoundary: number
+}
+
+export interface Overview {
+  range: { from: string; to: string }
+  outcomes: {
+    total: number
+    counts: Record<string, number>
+    deliveredValueMinor: number
+    currency: string
+  }
+  aging: OverviewAging
+  queue: {
+    queued: number
+    vending: number
+    /** Null when the queue could not be reached — not the same as empty. */
+    depth: number | null
+  }
+  approvals: { routingChangeRequests: number }
+  reconciliation: {
+    byStatus: Record<string, number>
+    varianceMinor: number | null
+    /** False until reconciliation lands (E15); a zero would claim the books balance. */
+    varianceAvailable: boolean
+  }
+}

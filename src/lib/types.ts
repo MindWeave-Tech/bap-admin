@@ -629,3 +629,71 @@ export interface VarianceQueue {
   data: VarianceRow[]
   meta: { page: number; perPage: number; total: number; lastPage: number }
 }
+
+export interface AlertDeliveryRow {
+  channel: string
+  target: string | null
+  status: string
+  failureReason: string | null
+  attemptedAt: string
+}
+
+export interface AlertRow {
+  id: number
+  event: string
+  label: string
+  severity: string
+  subject: string
+  summary: string
+  context: Record<string, unknown> | null
+  /** Repeats folded in while cooling down. Forty and one are different situations. */
+  occurrences: number
+  firstSeenAt: string
+  lastSeenAt: string
+  acknowledgedAt: string | null
+  acknowledgedBy: string | null
+  /** Whether anybody was told, as distinct from whether the platform meant to. */
+  deliveries: AlertDeliveryRow[]
+}
+
+export interface AlertQueue {
+  data: AlertRow[]
+  meta: { unacknowledged: number; critical: number }
+}
+
+export interface IncidentRow {
+  id: number
+  event: string
+  label: string
+  severity: string
+  subject: string
+  summary: string
+  status: string
+  /** Only what the state machine accepts, so no button is offered that would be refused. */
+  allowedTransitions: string[]
+  alertCount: number
+  openedAt: string
+  lastAlertAt: string
+  acknowledgedAt: string | null
+  acknowledgedBy: string | null
+  resolvedAt: string | null
+  resolvedBy: string | null
+  resolutionReason: string | null
+}
+
+export interface IncidentDetail extends IncidentRow {
+  alerts: {
+    id: number
+    summary: string
+    occurrences: number
+    context: Record<string, unknown> | null
+    lastSeenAt: string
+    delivered: boolean
+  }[]
+  transactions: { transactionReference: string; clientReference: string; status: string }[]
+}
+
+export interface IncidentQueue {
+  data: IncidentRow[]
+  meta: { open: number; critical: number }
+}

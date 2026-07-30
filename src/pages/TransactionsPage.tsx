@@ -4,6 +4,8 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { api } from '../lib/api'
 import type { Paginated, TransactionAging, TransactionSummary } from '../lib/types'
 import { Screen } from '../components/layout/Screen'
+import { useAuth } from '../lib/auth-context'
+import { Permission } from '../lib/permissions'
 import { Button, EmptyState, Loading, Notice, Panel, Select, Stat, StatusTag } from '../components/ui'
 
 const STATUSES = [
@@ -67,6 +69,7 @@ function AgingBar({ aging }: { aging: TransactionAging }) {
 }
 
 export function TransactionsPage({ manualReview = false }: { manualReview?: boolean }) {
+  const { can } = useAuth()
   const [search, setSearch] = useState('')
   const [submitted, setSubmitted] = useState('')
   const [status, setStatus] = useState('')
@@ -97,6 +100,25 @@ export function TransactionsPage({ manualReview = false }: { manualReview?: bool
     <Screen
       number={manualReview ? '03' : '02'}
       title={manualReview ? 'Manual review' : 'Transactions'}
+      actions={
+        can(Permission.TransactionsExport) ? (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              const params = new URLSearchParams()
+              if (submitted) params.set('search', submitted)
+              if (status) params.set('status', status)
+              if (manualReview) params.set('manualReview', '1')
+
+              // Exports what is on screen, not the whole table — and goes
+              // through the client so the bearer token travels with it.
+              void api.download(`/admin/transactions/export?${params}`, 'transactions.csv')
+            }}
+          >
+            Export
+          </Button>
+        ) : undefined
+      }
       description={
         manualReview
           ? 'Transactions the platform could not settle automatically. Expiry of the 24-hour requery window is not evidence that vending failed — resolve only against provider evidence.'

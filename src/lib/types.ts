@@ -331,6 +331,10 @@ export interface BreakerDetail {
 export interface ProviderDetail extends ProviderSummary {
   capabilities: { registered: boolean; declared: string[] }
   allowedTransitions: string[]
+  /** What the current status means, in a sentence. */
+  statusMeaning?: string
+  /** How to get from here to serving traffic, when that is not obvious. */
+  routeToService?: string | null
   breaker: BreakerDetail
   health: ProviderHealthDetail
 }

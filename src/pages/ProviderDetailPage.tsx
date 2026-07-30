@@ -116,8 +116,19 @@ export function ProviderDetailPage() {
             <Details>
               <Detail label="Status">
                 <StatusTag status={data.status} />
+                {/*
+                  Said on the page rather than only in the change dialog: an
+                  operator wondering why a provider is not serving should not
+                  have to open a form to find out.
+                */}
+                {data.statusMeaning && <div className="panel__subtitle">{data.statusMeaning}</div>}
               </Detail>
-              <Detail label="Accepting traffic">{data.acceptsNewTraffic ? 'Yes' : 'No'}</Detail>
+              <Detail label="Accepting traffic">
+                {data.acceptsNewTraffic ? 'Yes' : 'No'}
+                {!data.acceptsNewTraffic && data.routeToService && (
+                  <div className="panel__subtitle">{data.routeToService}</div>
+                )}
+              </Detail>
               <Detail label="Base URL">{data.baseUrl ?? 'Not set'}</Detail>
               <Detail label="Priority">{data.priority}</Detail>
               <Detail label="Timeouts">
@@ -379,6 +390,7 @@ export function ProviderDetailPage() {
       {changingStatus && (
         <StatusDialog
           allowed={data.allowedTransitions}
+          routeToService={data.routeToService}
           onClose={() => setChangingStatus(false)}
           onConfirm={async (status, reason) => {
             setChangingStatus(false)
@@ -484,10 +496,12 @@ function EnablementEvaluator({ providerId }: { providerId: number }) {
 
 function StatusDialog({
   allowed,
+  routeToService,
   onClose,
   onConfirm,
 }: {
   allowed: string[]
+  routeToService?: string | null
   onClose: () => void
   onConfirm: (status: string, reason: string) => Promise<void>
 }) {
@@ -518,6 +532,12 @@ function StatusDialog({
       }
     >
       <p>Only transitions the lifecycle allows are listed. The reason is recorded in the audit trail.</p>
+      {routeToService && (
+        // A list of what is permitted does not tell somebody what to do. This is
+        // the answer to "why can I not just switch it on?", which is the first
+        // thing a newly created provider prompts.
+        <Notice tone="neutral">{routeToService}</Notice>
+      )}
       <Select label="New status" value={status} onChange={setStatus}>
         {allowed.map((value) => (
           <option key={value} value={value}>

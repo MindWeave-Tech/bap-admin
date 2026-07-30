@@ -46,6 +46,7 @@ const NAV: NavGroup[] = [
       { to: '/api-clients', label: 'API clients', permission: Permission.ApiClientsView },
       { to: '/users', label: 'Users and roles', permission: Permission.UsersManage },
       { to: '/audit-logs', label: 'Audit logs', permission: Permission.AuditLogsView },
+      { to: '/guide', label: 'Using this console' },
     ],
   },
 ]

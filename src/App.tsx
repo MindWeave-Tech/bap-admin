@@ -16,6 +16,7 @@ import { ProfilePage } from './pages/ProfilePage'
 import { TransactionsPage } from './pages/TransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { CatalogPage } from './pages/CatalogPage'
+import { GuidePage } from './pages/GuidePage'
 import { IncidentsPage } from './pages/IncidentsPage'
 import { ReconciliationPage } from './pages/ReconciliationPage'
 import { CatalogSyncPage } from './pages/CatalogSyncPage'
@@ -69,6 +70,9 @@ export default function App() {
         >
           <Route index element={<DashboardPage />} />
           <Route path="profile" element={<ProfilePage />} />
+
+          {/* No permission gate: everybody who can sign in can read the guide. */}
+          <Route path="guide" element={<GuidePage />} />
           <Route
             path="transactions"
             element={

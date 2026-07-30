@@ -31,7 +31,6 @@ export interface AdminUser {
   twoFactorEnabled: boolean
   roles: string[]
   lastLoginAt: string | null
-  invitationToken?: string
 }
 
 export interface RoleSummary {

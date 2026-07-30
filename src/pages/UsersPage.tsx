@@ -8,7 +8,7 @@ import { Screen } from '../components/layout/Screen'
 export function UsersPage() {
   const queryClient = useQueryClient()
   const [inviting, setInviting] = useState(false)
-  const [invitation, setInvitation] = useState<{ email: string; token: string } | null>(null)
+  const [invitation, setInvitation] = useState<{ email: string } | null>(null)
   const [editing, setEditing] = useState<AdminUser | null>(null)
 
   const users = useQuery({ queryKey: ['users'], queryFn: () => api.get<AdminUser[]>('/admin/users') })
@@ -136,9 +136,9 @@ export function UsersPage() {
         <InviteDialog
           roles={roles.data ?? []}
           onClose={() => setInviting(false)}
-          onInvited={(email, token) => {
+          onInvited={(email) => {
             setInviting(false)
-            setInvitation({ email, token })
+            setInvitation({ email })
             refresh()
           }}
         />
@@ -146,15 +146,22 @@ export function UsersPage() {
 
       {invitation && (
         <Dialog
-          title="Invitation created"
+          title="Invitation sent"
           onClose={() => setInvitation(null)}
           footer={<Button onClick={() => setInvitation(null)}>Done</Button>}
         >
           <p>
-            Send this invitation link to <strong>{invitation.email}</strong>. It expires in 72 hours and is shown
-            only once.
+            An invitation is on its way to <strong>{invitation.email}</strong>. It expires in 72 hours.
           </p>
-          <code className="secret">{`${window.location.origin}/accept-invitation?token=${invitation.token}`}</code>
+          <p className="panel__subtitle">
+            {/*
+              The link used to be shown here for an administrator to copy and
+              send on. That put a credential for a new administrative account
+              into this browser and the API's logs, so the invitee is now the
+              only person who ever sees it.
+            */}
+            Nobody but the invitee sees the link. If it expires or does not arrive, invite them again.
+          </p>
         </Dialog>
       )}
 
@@ -180,7 +187,7 @@ function InviteDialog({
 }: {
   roles: RoleSummary[]
   onClose: () => void
-  onInvited: (email: string, token: string) => void
+  onInvited: (email: string) => void
 }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -188,7 +195,7 @@ function InviteDialog({
 
   const mutation = useMutation({
     mutationFn: () => api.post<AdminUser>('/admin/users', { name, email, roles: selected }),
-    onSuccess: (user) => onInvited(user.email, user.invitationToken ?? ''),
+    onSuccess: (user) => onInvited(user.email),
   })
 
   const fieldErrors = mutation.error instanceof ApiError ? mutation.error.fieldErrors() : {}

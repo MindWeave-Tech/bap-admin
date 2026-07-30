@@ -6,6 +6,8 @@ import { AppShell } from './components/layout/AppShell'
 import { EmptyState, Loading } from './components/ui'
 import { LoginPage } from './pages/LoginPage'
 import { AcceptInvitationPage } from './pages/AcceptInvitationPage'
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
+import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { UsersPage } from './pages/UsersPage'
 import { ApiClientsPage } from './pages/ApiClientsPage'
@@ -54,6 +56,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/accept-invitation" element={<AcceptInvitationPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route
           element={

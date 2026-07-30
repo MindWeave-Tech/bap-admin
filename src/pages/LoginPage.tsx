@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, Link } from 'react-router'
 import { useAuth } from '../lib/auth-context'
 import { ApiError } from '../lib/api'
 import { AuthPoster } from '../components/layout/AuthPoster'
@@ -96,6 +96,9 @@ export function LoginPage() {
             <Button type="submit" loading={busy} className="btn-block">
               Sign in
             </Button>
+
+            {/* Somebody who cannot sign in is the only person who needs this. */}
+            <Link to="/forgot-password">Forgotten your password?</Link>
           </>
         ) : (
           <>

@@ -701,3 +701,20 @@ export interface IncidentQueue {
   data: IncidentRow[]
   meta: { open: number; critical: number }
 }
+
+/** E28, ADR-019. */
+export interface ClientWalletRow {
+  id: number
+  clientId: number
+  clientCode: string
+  clientName: string
+  clientType: string
+  currency: string
+  availableMinor: number
+  reservedMinor: number
+  ledgerMinor: number
+  enforcementMode: 'ENFORCE' | 'OVERDRAFT' | 'RECORD_ONLY'
+  overdraftLimitMinor: number
+  isOverdrawn: boolean
+  balanceReconciledAt: string | null
+}

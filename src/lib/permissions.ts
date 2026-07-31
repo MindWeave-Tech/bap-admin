@@ -28,6 +28,13 @@ export const Permission = {
   RolesManage: 'roles.manage',
   AuditLogsView: 'audit_logs.view',
   ResellerPricingManage: 'reseller_pricing.manage',
+  ClientWalletsView: 'client_wallets.view',
+  ClientWalletsFund: 'client_wallets.fund',
+  ClientWalletsApprove: 'client_wallets.approve',
+  ClientWalletsAdjust: 'client_wallets.adjust',
+  ClientWalletsConfigure: 'client_wallets.configure',
+  ClientPricingManage: 'client_pricing.manage',
+  ClientPricingApprove: 'client_pricing.approve',
 } as const
 
 export type PermissionName = (typeof Permission)[keyof typeof Permission]

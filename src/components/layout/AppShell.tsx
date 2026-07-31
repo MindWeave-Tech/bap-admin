@@ -38,6 +38,7 @@ const NAV: NavGroup[] = [
       { to: '/catalog', label: 'Service catalog', permission: Permission.CatalogView },
       { to: '/catalog/sync', label: 'Catalog sync', permission: Permission.CatalogView },
       { to: '/reconciliation', label: 'Reconciliation', permission: Permission.ReconciliationView },
+      { to: '/client-wallets', label: 'Client wallets', permission: Permission.ClientWalletsView },
     ],
   },
   {

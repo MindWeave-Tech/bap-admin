@@ -11,6 +11,7 @@ import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { UsersPage } from './pages/UsersPage'
 import { ApiClientsPage } from './pages/ApiClientsPage'
+import { ClientWalletsPage } from './pages/ClientWalletsPage'
 import { ApiClientDetailPage } from './pages/ApiClientDetailPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { TransactionsPage } from './pages/TransactionsPage'
@@ -182,6 +183,14 @@ export default function App() {
             element={
               <RequirePermission permission={Permission.UsersManage}>
                 <UsersPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="client-wallets"
+            element={
+              <RequirePermission permission={Permission.ClientWalletsView}>
+                <ClientWalletsPage />
               </RequirePermission>
             }
           />

@@ -460,6 +460,14 @@ export interface Overview {
   }
 }
 
+export interface SkippedBiller {
+  categoryCode: string
+  /** Null when the whole category was refused. */
+  billerCode: string | null
+  billerName: string | null
+  message: string
+}
+
 export interface CatalogSyncRun {
   id: number
   providerCode: string
@@ -467,10 +475,34 @@ export interface CatalogSyncRun {
   status: string
   counts: { new: number; changed: number; removed: number; unchanged: number }
   errorMessage: string | null
+  /** Billers the provider listed but refused to describe; their mappings were left alone. */
+  skippedBillers: SkippedBiller[]
   startedAt: string
   completedAt: string | null
   /** How many items still need a decision — the reason to open the queue. */
   pendingItems: number
+}
+
+/** What the provider reported for one product. Older runs may lack the later fields. */
+export interface CatalogSyncPayload {
+  name?: string
+  billerName?: string
+  categoryName?: string
+  fixedAmountMinor?: number | null
+  minimumAmountMinor?: number | null
+  maximumAmountMinor?: number | null
+  validationRequired?: boolean
+}
+
+/** An internal product created while approving the provider product it fulfils. */
+export interface NewProductDraft {
+  billerCode: string
+  code: string
+  name: string
+  amountType: 'FIXED' | 'VARIABLE'
+  fixedAmountMinor?: number
+  minimumAmountMinor?: number
+  maximumAmountMinor?: number
 }
 
 export interface CatalogSyncItem {
@@ -484,10 +516,12 @@ export interface CatalogSyncItem {
   providerProductCode: string
   providerProductName: string | null
   differences: Record<string, { from?: unknown; to?: unknown }>
-  providerPayload: Record<string, unknown>
+  providerPayload: CatalogSyncPayload
   suggestedProduct: { code: string; name: string } | null
   /** True when approval cannot proceed until an internal product is chosen. */
   requiresProductChoice: boolean
+  /** The internal biller other products from this provider biller already map to. */
+  suggestedBillerCode: string | null
   currentMapping: { id: number; version: number } | null
   reviewStatus: string
   reviewedBy: string | null
@@ -717,4 +751,32 @@ export interface ClientWalletRow {
   overdraftLimitMinor: number
   isOverdrawn: boolean
   balanceReconciledAt: string | null
+}
+
+/** An API client with no wallet yet: it has never vended or been funded. */
+export interface ClientWithoutWallet {
+  clientId: number
+  clientCode: string
+  clientName: string
+  clientType: string
+}
+
+export interface ClientWalletList {
+  data: ClientWalletRow[]
+  meta: { clientsWithoutWallet: ClientWithoutWallet[] }
+}
+
+/** A funding request waiting on a second operator (TASK-2805). */
+export interface PendingClientWalletFunding {
+  id: number
+  clientId: number
+  clientCode: string | null
+  clientName: string | null
+  amountMinor: number
+  currency: string
+  reference: string
+  reason: string
+  requestedByUserId: number
+  requestedByName: string | null
+  requestedAt: string
 }
